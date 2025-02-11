@@ -1,0 +1,80 @@
+lamorel_args:
+  log_level: info
+  allow_subgraph_use_whith_gradient: true
+  distributed_setup_args:
+    n_rl_processes: 1
+    n_llm_processes: 2
+  accelerate_args:
+    config_file: ./default_config.yaml
+    machine_rank: 0
+    main_process_ip: 127.0.0.1
+    num_machines: 1
+    main_process_port: ???
+  llm_args:
+    model_type: seq2seq
+    model_path: /LLMs/flan-t5-base
+    pretrained: true
+    minibatch_size: 4096
+    pre_encode_inputs: true
+    load_in_4bit: true
+    parallelism:
+      use_gpu: true
+      model_parallelism_size: 1
+      synchronize_gpus_after_scoring: false
+      empty_cuda_cache_after_scoring: false
+
+rl_script_args:
+  path: ???
+  seed: ???
+  
+  # llm
+  gradient_batch_size: 128
+  gradient_minibatch_size:
+  
+  # LoRA
+  use_lora: true
+  lora_r: 16
+  lora_alpha: 32
+  
+  # SAC
+  gamma: 0.99
+  lr: 1e-4
+  a_lr: 1e-3
+  minibatch_size: 256
+  update_freq: 64
+  nb_updates: 1
+  warmup_updates: 10
+  buffer_size: 500000
+  n_steps: 3
+  alpha: auto
+
+  # rl training
+  number_envs: 32
+  num_episodes: 500000
+  goal_sampler: magellan
+  loading_path:
+  adaptation_test: false
+
+  # logs
+  save_freq: 500
+  test_freq: 5000
+  output_dir: ???
+
+  # Environment
+  env_name: LittleZoo
+  goals_distribution: [20000, 4000, 800, 160, 32] #25k
+  #goals_distribution: [40000, 8000, 1600, 320, 64] #50k
+  #goals_distribution: [80000, 16000, 3200, 640, 128] #100k
+
+# Goal sampler params
+magellan_args:
+  N: 100
+  epsilon_start: 1.0
+  epsilon_end: 0.2
+  epsilon_decay: 320
+  use_value: false
+  buffer_size: 5000
+  batch_size: 256
+  recompute_freq: 32
+  sr_adapters: sr_adapters
+  train_llm: true
